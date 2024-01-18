@@ -1,54 +1,56 @@
-/*
-Draw a house using openGL with defined windows and different gradient filling*/
-
 #include <GL/glut.h>
-#include <GL/gl.h>
-#include <GL/glu.h>
 
-void init(void) {
-  glClearColor(1.0, 1.0, 1.0, 0.0);
-  glMatrixMode(GL_PROJECTION);
-  glLoadIdentity();
-  gluOrtho2D(-10.0, 10.0, -10.0, 10.0);
+void drawHouse() {
+  // Draw house body
+  glBegin(GL_QUADS);
+  glColor3f(0.8f, 0.6f, 0.4f); // Brown color
+  glVertex2f(-0.5f, -0.5f);
+  glVertex2f(0.5f, -0.5f);
+  glVertex2f(0.5f, 0.5f);
+  glVertex2f(-0.5f, 0.5f);
+  glEnd();
+
+  // Draw roof
+  glBegin(GL_TRIANGLES);
+  glColor3f(0.9f, 0.2f, 0.2f); // Red color
+  glVertex2f(-0.6f, 0.5f);
+  glVertex2f(0.6f, 0.5f);
+  glVertex2f(0.0f, 1.0f);
+  glEnd();
+
+  // Draw windows
+  glBegin(GL_QUADS);
+  glColor3f(0.9f, 0.9f, 0.9f); // White color
+  glVertex2f(-0.3f, -0.2f);
+  glVertex2f(-0.1f, -0.2f);
+  glVertex2f(-0.1f, 0.0f);
+  glVertex2f(-0.3f, 0.0f);
+
+  glVertex2f(0.1f, -0.2f);
+  glVertex2f(0.3f, -0.2f);
+  glVertex2f(0.3f, 0.0f);
+  glVertex2f(0.1f, 0.0f);
+  glEnd();
 }
 
-void drawHouse(void) {
-  glColor3f(1.0, 0.0, 0.0);
-  glBegin(GL_POLYGON);
-    glVertex2i(-5, 5);
-    glVertex2i(-5, 10);
-    glVertex2i(5, 10);
-    glVertex2i(5, 5);
-  glEnd();
-  glColor3f(0.0, 0.0, 1.0);
-  glBegin(GL_POLYGON);
-    glVertex2i(-2, 5);
-    glVertex2i(-2, 7);
-    glVertex2i(2, 7);
-    glVertex2i(2, 5);
-  glEnd();
-  glColor3f(0.0, 1.0, 0.0);
-  glBegin(GL_POLYGON);
-    glVertex2i(-1, 7);
-    glVertex2i(-1, 10);
-    glVertex2i(1, 10);
-    glVertex2i(1, 7);
-  glEnd();
-}
-
-void display(void) {
+void display() {
   glClear(GL_COLOR_BUFFER_BIT);
+  glLoadIdentity();
+
+  // Set up orthographic projection
+  glOrtho(-1.0, 1.0, -1.0, 1.0, -1.0, 1.0);
+
+  // Draw the house
   drawHouse();
+
   glFlush();
 }
 
 int main(int argc, char** argv) {
   glutInit(&argc, argv);
   glutInitDisplayMode(GLUT_SINGLE | GLUT_RGB);
-  glutInitWindowSize(400, 400);
-  glutInitWindowPosition(100, 100);
+  glutInitWindowSize(800, 600); // Set the window size here
   glutCreateWindow("House");
-  init();
   glutDisplayFunc(display);
   glutMainLoop();
   return 0;

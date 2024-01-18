@@ -1,0 +1,7 @@
+Use openGL
+Mark points with the mouse input. Once two points are marked, join them to form a line.
+The next point marked will be joined with the previous point, remove the line before. Make sure it works for any number of points. Prompt the user to mark points with a set of  rules.
+Use an array to store the points and not a vector.
+
+The screen height is 480 and the mouse input should be scaled to the screen size.
+Make sure the line is drawn in the correct direction.
