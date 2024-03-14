@@ -1,0 +1,1 @@
+polygon clipping using openGL.  draw clipped window using mouse input. polygon drawn using mouse input. clip accordingly and show clipped region in different color. do not use vectors.
