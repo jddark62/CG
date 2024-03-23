@@ -5,6 +5,7 @@ void display() {
     
     // Set the line stipple pattern
     glEnable(GL_LINE_STIPPLE);
+    // 0xAAAA is the pattern for a dashed line
     glLineStipple(1, 0xAAAA);
     
     // Draw a line
