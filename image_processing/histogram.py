@@ -1,35 +1,75 @@
-import cv2
 import numpy as np
+import cv2
 
-import matplotlib.pyplot as plt
+def my_float2int(img):
+    
+    # Don't use *255 twice
+    # img = np.round(img * 255, 0)
+    img = np.round(img, 0)
+    img = np.minimum(img, 255)
+    img = np.maximum(img, 0)
+    img = img.astype('uint8')
+    
+    return img
 
-def histogram_equalization(image):
-    # Convert the image to grayscale
-    gray = cv2.cvtColor(image, cv2.COLOR_BGR2GRAY)
+def equalizeHistogram(img):
     
-    # Calculate the histogram of the grayscale image
-    hist, bins = np.histogram(gray.flatten(), 256, [0,256])
+    img_height = img.shape[0]
+    img_width = img.shape[1]
+    histogram = np.zeros([256], np.int32) 
     
-    # Calculate the cumulative distribution function (CDF) of the histogram
-    cdf = hist.cumsum()
-    cdf_normalized = cdf * hist.max() / cdf.max()
     
-    # Perform histogram equalization
-    equalized = np.interp(gray.flatten(), bins[:-1], cdf_normalized)
-    equalized = equalized.reshape(gray.shape)
+    # calculate histogram 
+    for i in range(0, img_height):
+        for j in range(0, img_width):
+            histogram[img[i, j]] +=1
+            
+    # calculate pdf of the image
+    pdf_img = histogram / histogram.sum()
     
-    # Convert the equalized image back to BGR
-    equalized = cv2.cvtColor(equalized, cv2.COLOR_GRAY2BGR)
-    
-    return equalized
+    ### calculate cdf 
+    # cdf initialize . 
+    # Why does the type np.int32?
+    #cdf = np.zeros([256], np.int32)
+    cdf = np.zeros([256], float)
 
-# Load the input image
-image = cv2.imread('input.jpg')
+    # For loop for cdf
+    for i in range(0, 256):
+        for j in range(0, i+1):
+            cdf[i] += pdf_img[j]
 
-# Perform histogram equalization
-equalized_image = histogram_equalization(image)
+    # You may implement the "accumulated sum" in a more efficient way:
+    cdf = np.zeros(256, float)
+    cdf[0] = pdf_img[0]
+    for i in range(1, 256):
+        cdf[i] = cdf[i-1] + pdf_img[i]
+     
+    cdf_eq = np.round(cdf * 255, 0) # mapping, transformation function T(x)
+    
+    imgEqualized = np.zeros((img_height, img_width))
+    
+    # for mapping input image to s.
+    for i in range(0, img_height):
+        for j in range(0, img_width):
+            r = img[i, j] # feeding intensity levels of pixels into r. 
+            s = cdf_eq[r] # finding value of s by finding r'th position in the cdf_eq list.
+            imgEqualized[i, j] = s # mapping s thus creating new output image.
+            
+    # calculate histogram equalized image here
+    # imgEqualized = s # change this
+    
+    return imgEqualized
 
-# Display the original and equalized images
-plt.subplot(121), plt.imshow(cv2.cvtColor(image, cv2.COLOR_BGR2RGB)), plt.title('Original')
-plt.subplot(122), plt.imshow(cv2.cvtColor(equalized_image, cv2.COLOR_BGR2RGB)), plt.title('Equalized')
-plt.show()
+# end of function
+
+
+# Read input image as Grayscale
+img_low = cv2.imread('img_low.png', cv2.IMREAD_GRAYSCALE)
+
+# 2.2 obtain the histogram equalized images using the above function
+img_eq_low = equalizeHistogram(img_low)
+img_eq_low = my_float2int(img_eq_low)
+
+# Use cv2.imshow (instead of plt.imshow) just for testing.
+cv2.imshow('img_eq_low', img_eq_low)
+cv2.waitKey()
